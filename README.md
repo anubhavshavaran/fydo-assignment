@@ -1,50 +1,75 @@
-# Welcome to your Expo app 👋
+# Local Shop Finder
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a React Native mobile application designed to connect users with local shops in their immediate vicinity. The app demonstrates a complete development cycle, from user authentication to real-time data fetching from external APIs based on the user's geographical location.
 
-## Get started
+## Key Features
 
-1. Install dependencies
+* **User Authentication:** Secure login and logout functionality to manage user sessions.
+* **Persistent Sessions:** Uses `AsyncStorage` to keep users logged in across app launches.
+* **Location-Aware Functionality:**
+   * Requests user permission to access device location using `expo-location`.
+   * Handles cases where permission is denied and provides a way for the user to retry.
+* **Nearby Shop Discovery:**
+   * Fetches the user's current GPS coordinates.
+   * Utilizes the **Google Places API** to find real stores within a 300-meter radius.
+   * Conditionally renders a list of nearby shops or a message indicating that no shops are available in the area.
 
-   ```bash
-   npm install
-   ```
+## Technology Stack
 
-2. Start the app
+* **Framework:** React Native
+* **Platform:** Expo (Development Build)
+* **Routing:** Expo Router
+* **Location Services:** `expo-location`
+* **Local Storage:** `@react-native-async-storage/async-storage`
+* **External APIs:** Google Places API (for Nearby Search)
+* **Styling:** React Native StyleSheet
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+### A Note on Location & Emulators
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+This application was developed and tested using an Android/iOS emulator. By default, emulators often simulate a location in **Mountain View, California, USA**.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+When you run the app, it will fetch the user's location, which will be reported as this default California location. Consequently, the app will display shops that are nearby that specific location (e.g., the Googleplex campus store). This demonstrates that the API integration and location fetching are working correctly.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Getting Started
 
-```bash
-npm run reset-project
-```
+To get a local copy up and running, follow these simple steps.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Prerequisites
 
-## Learn more
+* Node.js (LTS version recommended)
+* npm or yarn
+* An Android or iOS emulator, or a physical device with the Expo Go app.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Installation
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1.  **Clone the repository:**
+    ```sh
+    git clone [https://github.com/anubhavshavaran/fydo-assignment.git](https://github.com/anubhavshavaran/fydo-assignment.git)
+    cd fydo-assignment
+    ```
 
-## Join the community
+2.  **Install NPM packages:**
+    ```sh
+    npm install
+    ```
+    or if you use yarn:
+    ```sh
+    yarn install
+    ```
 
-Join our community of developers creating universal apps.
+3.  **Run the application:**
+    This project uses an **Expo Development Build**, which creates a custom native app for development.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+    For Android:
+    ```sh
+    npx expo run:android
+    ```
+    For iOS:
+    ```sh
+    npx expo run:ios
+    ```
+    The first time you run this, it will build and install the app on your emulator or device. Subsequent launches will be much faster.

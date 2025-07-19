@@ -45,8 +45,10 @@ function Index() {
                     vicinity: item.vicinity,
                 } as Shop));
                 setShops(shops);
+                setError(null);
             } else if (data.status === 'ZERO_RESULTS' || data.results.length === 0) {
                 setShops([]);
+                setError(null);
             } else {
                 throw new Error(data.error_message || `API Error: ${data.status}`);
             }
