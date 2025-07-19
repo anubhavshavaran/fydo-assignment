@@ -1,54 +1,78 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
+    Alert,
+    Image,
     SafeAreaView,
-    View,
+    StatusBar,
+    StyleSheet,
+    Switch,
     Text,
     TextInput,
     TouchableOpacity,
-    StyleSheet,
-    Image,
-    Switch,
-    StatusBar,
+    View,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import {Feather} from '@expo/vector-icons';
+import {useRouter} from "expo-router";
+import {Colors} from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loader from "@/components/ui/Loader";
 
-const COLORS = {
-    primary: '#007AFF',
-    secondary: '#4A4A4A',
-    lightGray: '#F1F1F5',
-    textPrimary: '#000000',
-    textSecondary: '#6E6E73',
-    white: '#FFFFFF',
-    link: '#007AFF',
-};
+function LoginScreen() {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+    const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const router = useRouter();
 
-const LoginScreen = () => {
-    // --- State Management ---
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
+    async function login() {
+        try {
+            setIsLoading(true);
+
+            if (email === '' || password === '') {
+                Alert.alert('Unable to Login!', 'Please enter your credentials!');
+            }
+
+            if (email === 'admin' && password === 'root') {
+                if (rememberMe) {
+                    await AsyncStorage.setItem('user', email);
+                }
+                router.replace("/(main)/")
+            } else {
+                Alert.alert('Unable to Login!', 'Please enter correct credentials!');
+            }
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Something went wrong');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    if (isLoading) {
+        return <Loader/>
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+            <StatusBar barStyle="dark-content" backgroundColor={Colors.light.white}/>
             <View style={styles.container}>
                 <View style={styles.header}>
                     <Image
                         source={require('@/assets/images/loginLogo.png')}
                         style={styles.logo}
                     />
-                    <Text style={styles.headerText}>UI Unicorn</Text>
+                    <Text style={styles.headerText}>Fydo</Text>
                 </View>
 
                 <View style={styles.mainContent}>
                     <Text style={styles.title}>Nice to see you again</Text>
 
-                    <Text style={styles.label}>Login</Text>
+                    <Text style={styles.label}>Username</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Email or phone number"
-                        placeholderTextColor={COLORS.textSecondary}
+                        placeholder="Admin"
+                        placeholderTextColor={Colors.light.textSecondary}
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
@@ -60,7 +84,7 @@ const LoginScreen = () => {
                         <TextInput
                             style={styles.passwordInput}
                             placeholder="Enter password"
-                            placeholderTextColor={COLORS.textSecondary}
+                            placeholderTextColor={Colors.light.textSecondary}
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!isPasswordVisible}
@@ -69,7 +93,7 @@ const LoginScreen = () => {
                             <Feather
                                 name={isPasswordVisible ? 'eye' : 'eye-off'}
                                 size={22}
-                                color={COLORS.textSecondary}
+                                color={Colors.light.textSecondary}
                             />
                         </TouchableOpacity>
                     </View>
@@ -77,67 +101,40 @@ const LoginScreen = () => {
                     <View style={styles.optionsContainer}>
                         <View style={styles.rememberMeContainer}>
                             <Switch
-                                trackColor={{ false: '#E9E9EA', true: COLORS.primary }}
-                                thumbColor={COLORS.white}
-                                ios_backgroundColor="#E9E9EA"
+                                trackColor={{false: '#E9E9EA', true: Colors.light.tabIconSelected}}
+                                thumbColor={Colors.light.white}
+                                ios_backgroundColor={Colors.light.tabIconSelected}
                                 onValueChange={() => setRememberMe(previousState => !previousState)}
                                 value={rememberMe}
                             />
                             <Text style={styles.rememberMeText}>Remember me</Text>
                         </View>
-                        <TouchableOpacity>
-                            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                        </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={styles.signInButton}>
+                    <TouchableOpacity style={styles.signInButton} onPress={login}>
                         <Text style={styles.signInButtonText}>Sign in</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.googleButton}>
-                        <Image
-                            source={{ uri: 'https://placehold.co/20x20/ffffff/DB4437?text=G' }} // Simple G for Google
-                            style={styles.googleIcon}
-                        />
-                        <Text style={styles.googleButtonText}>Or sign in with Google</Text>
-                    </TouchableOpacity>
-
-                    <View style={styles.signUpContainer}>
-                        <Text style={styles.signUpText}>Don&#39;t have an account?</Text>
-                        <TouchableOpacity>
-                            <Text style={styles.signUpLink}> Sign up now</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style={styles.footer}>
-                    <View style={styles.footerLeft}>
-                        <Image
-                            source={{ uri: 'https://placehold.co/24x24/A9C5FF/333?text=UI' }}
-                            style={styles.footerLogo}
-                        />
-                        <Text style={styles.footerText}>@uiunicorn</Text>
-                    </View>
-                    <Text style={styles.footerText}>© Perfect Login 2021</Text>
                 </View>
             </View>
         </SafeAreaView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: Colors.light.background,
     },
     container: {
         flex: 1,
+        justifyContent: 'center',
         paddingHorizontal: 24,
+        paddingTop: 40,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 20,
+        paddingTop: 40,
         paddingBottom: 40,
     },
     logo: {
@@ -149,7 +146,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
         marginLeft: 12,
-        color: COLORS.textPrimary,
+        color: Colors.light.textPrimary,
     },
     mainContent: {
         flex: 1,
@@ -157,16 +154,16 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: COLORS.textPrimary,
+        color: Colors.light.textPrimary,
         marginBottom: 30,
     },
     label: {
         fontSize: 14,
-        color: COLORS.textSecondary,
+        color: Colors.light.textSecondary,
         marginBottom: 8,
     },
     input: {
-        backgroundColor: COLORS.lightGray,
+        backgroundColor: Colors.light.lightGray,
         height: 50,
         borderRadius: 8,
         paddingHorizontal: 16,
@@ -176,7 +173,7 @@ const styles = StyleSheet.create({
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.lightGray,
+        backgroundColor: Colors.light.lightGray,
         borderRadius: 8,
         height: 50,
         paddingHorizontal: 16,
@@ -198,14 +195,10 @@ const styles = StyleSheet.create({
     },
     rememberMeText: {
         marginLeft: 8,
-        color: COLORS.textSecondary,
-    },
-    forgotPasswordText: {
-        color: COLORS.link,
-        fontWeight: '600',
+        color: Colors.light.textSecondary,
     },
     signInButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: Colors.light.tabIconSelected,
         height: 50,
         borderRadius: 8,
         justifyContent: 'center',
@@ -213,60 +206,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     signInButtonText: {
-        color: COLORS.white,
+        color: Colors.light.white,
         fontSize: 18,
         fontWeight: 'bold',
-    },
-    googleButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.secondary,
-        height: 50,
-        borderRadius: 8,
-        marginBottom: 40,
-    },
-    googleIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 12,
-    },
-    googleButtonText: {
-        color: COLORS.white,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    signUpContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    signUpText: {
-        color: COLORS.textSecondary,
-    },
-    signUpLink: {
-        color: COLORS.link,
-        fontWeight: 'bold',
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingBottom: 20,
-    },
-    footerLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    footerLogo: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-    },
-    footerText: {
-        marginLeft: 8,
-        color: COLORS.textSecondary,
-        fontSize: 12,
     },
 });
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     SafeAreaView,
     StatusBar,
@@ -10,12 +10,24 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import {Colors} from "@/constants/Colors";
-import {useNavigation} from "expo-router";
+import {useRouter} from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { height } = Dimensions.get('window');
 
 function Index() {
-    const navigation = useNavigation();
+    const router = useRouter();
+
+    useEffect(() => {
+        async function checkUser() {
+            const token = await AsyncStorage.getItem('user');
+            if (token) {
+                router.replace("/(main)")
+            }
+        }
+
+        checkUser();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -34,7 +46,7 @@ function Index() {
                     <Text style={styles.subtitle}>
                         Discover the best shops and services right around the corner.
                     </Text>
-                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('login')}>
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('/(login)/login')}>
                         <Text style={styles.buttonText}>Get Started</Text>
                     </TouchableOpacity>
                 </View>
